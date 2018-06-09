@@ -99,3 +99,24 @@ describe('GET /todos/:id', () => {
             .end(done);
     })
 });
+
+describe('DELETE /todos/:id', () => {
+    const id = todos[0]._id.toString();
+    it('should delete todo item', (done) => {
+        request(app)
+            .delete(`/todos/${todos[0]._id.toString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.id).toBe(todos[0].id);
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+                Todo.findById(id).then((todo) => {
+                    expect(todo).toNotExist()
+                    done();
+                }).catch((e) => {done(e)})
+            })
+    })
+});
