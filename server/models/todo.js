@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const {mongoose} = require('./../db/mongoose-conf');
 
 const Todo = mongoose.model('Todo', {
     text: {

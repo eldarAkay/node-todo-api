@@ -1,5 +1,6 @@
 const expect = require('expect');
 const request = require('supertest');
+require('./../configs/config');
 
 const {Todo} = require('./../models/todo');
 const {app} = require('./../server');
@@ -7,7 +8,7 @@ const {ObjectID} = require('mongodb');
 
 const todos = [
     {_id: new ObjectID(), text: 'First todo'},
-    {_id: new ObjectID(), text: 'Second todo'}
+    {_id: new ObjectID(), text: 'Second todo', completed: true, completedAt: 333}
 ];
 
 beforeEach((done) => {
@@ -104,7 +105,7 @@ describe('DELETE /todos/:id', () => {
     const id = todos[0]._id.toString();
     it('should delete todo item', (done) => {
         request(app)
-            .delete(`/todos/${todos[0]._id.toString()}`)
+            .delete(`/todos/${id}`)
             .expect(200)
             .expect((res) => {
                 expect(res.body.todo.id).toBe(todos[0].id);
@@ -118,5 +119,21 @@ describe('DELETE /todos/:id', () => {
                     done();
                 }).catch((e) => {done(e)})
             })
+    })
+});
+
+describe('PATCH /todos/:id', () => {
+    const id = todos[1]._id.toString();
+    const text = 'this is the updated text';
+    it('should update todo item', (done) => {
+        request(app)
+            .patch(`/todos/${id}`)
+            .send({completed: true, text})
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(text);
+                expect(res.body.todo.completed).toBe(true);
+            })
+            .end(done);
     })
 });
